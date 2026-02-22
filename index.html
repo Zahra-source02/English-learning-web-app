@@ -1,0 +1,380 @@
+  
+ <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي الـ 100 سؤال - لغة إنجليزية</title>
+      <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIRST STEP - تعلم الإنجليزية</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --primary: #6366f1; /* لون أزرق نيلي هادئ */
+            --accent: #10b981;  /* لون أخضر للنجاح */
+            --text: #f8fafc;
+            --error: #ef4444;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            width: 95%;
+            max-width: 500px;
+            height: 90vh;
+            background: var(--card-bg);
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .game-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.3);
+            border-radius: 25px 25px 0 0;
+        }
+
+        .logo-text {
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .content { flex: 1; padding: 20px; overflow-y: auto; }
+
+        .option-btn {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 14px;
+            border-radius: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: left;
+            direction: ltr;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover { background: rgba(99, 102, 241, 0.1); border-color: var(--primary); }
+        .correct { background: var(--accent) !important; border-color: var(--accent); }
+        .wrong { background: var(--error) !important; border-color: var(--error); }
+
+        .timer-bar {
+            width: 100%;
+            height: 6px;
+            background: #334155;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        #timer-fill {
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.1s linear;
+        }
+
+        #translation-box {
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 12px;
+            text-align: right;
+            border-right: 5px solid var(--accent);
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .hidden { display: none !important; }
+        
+        .btn-main {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="game-header">
+        <div>🔥 <span id="streak">0</span></div>
+        <div class="logo-text">FIRST STEP</div>
+        <div>🏆 <span id="score">0</span></div>
+    </div>
+
+    <div id="home-screen" class="content" style="text-align:center; display:flex; flex-direction:column; justify-content:center;">
+        <div style="font-size: 80px; margin-bottom: 20px;">👣</div>
+        <h1>مرحباً بك في الخطوة الأولى</h1>
+        <p style="color:#94a3b8; margin-bottom:40px">اختبر فهمك لـ 100 جملة إنجليزية شائعة. خطوة بخطوة نحو الاحتراف.</p>
+        <button class="btn-main" onclick="startGame()">ابدأ رحلتك الآن</button>
+    </div>
+
+    <div id="game-screen" class="content hidden">
+        <div style="display:flex; justify-content:space-between; font-size:13px; color: var(--primary)">
+            <span id="progress">1 / 20</span>
+            <span id="timer-text">20.0s</span>
+        </div>
+        <h3 id="q-text" style="text-align:center; min-height:60px; font-size: 1.3rem;">...</h3>
+        <div class="timer-bar"><div id="timer-fill"></div></div>
+        <div id="options-container"></div>
+        <div id="translation-box" class="hidden">
+            <div id="trans-text" style="color: var(--text);"></div>
+        </div>
+    </div>
+
+    <div id="result-screen" class="content hidden" style="text-align:center; display:flex; flex-direction:column; justify-content:center;">
+        <h2>لقد أكملت الخطوة!</h2>
+        <div id="final-score" style="font-size:50px; margin:20px 0; color:var(--primary)">0</div>
+        <p id="res-feedback" style="margin-bottom:30px"></p>
+        <button class="btn-main" onclick="location.reload()">كرر الخطوة (أسئلة جديدة)</button>
+    </div>
+</div>
+
+<script>
+    // قاعدة البيانات الـ 100 سؤال (نفس المحتوى السابق مع تعديلات طفيفة للتنسيق)
+    const masterDatabase = [
+        { q: "Which animal is known as the 'King of the Jungle'?", o: ["Tiger", "Lion", "Elephant"], c: 1, tr: "أي حيوان يلقب بـ 'ملك الغابة'؟ (الأسد)" },
+        { q: "What do you use to tell the time?", o: ["Compass", "Clock", "Mirror"], c: 1, tr: "ماذا تستخدم لمعرفة الوقت؟ (الساعة)" },
+        { q: "Which fruit is traditionally red and crunchy?", o: ["Banana", "Apple", "Grape"], c: 1, tr: "أي فاكهة تكون حمراء ومقرمشة عادة؟ (التفاح)" },
+        { q: "What is the opposite of 'Cold'?", o: ["Hot", "Wet", "Fast"], c: 0, tr: "ما هو عكس كلمة 'بارد'؟ (حار)" },
+        { q: "If you are 'thirsty', you need to:", o: ["Sleep", "Drink", "Eat"], c: 1, tr: "إذا كنت 'عطشاناً'، فأنت بحاجة إلى: (الشرب)" },
+        { q: "A person who flies an airplane is a:", o: ["Pilot", "Driver", "Sailor"], c: 0, tr: "الشخص الذي يقود الطائرة هو: (طيار)" },
+        { q: "Where do you go to borrow books?", o: ["Cinema", "Library", "Pharmacy"], c: 1, tr: "أين تذهب لاستعارة الكتب؟ (المكتبة)" },
+        { q: "Which day comes after Friday?", o: ["Sunday", "Monday", "Saturday"], c: 2, tr: "أي يوم يأتي بعد الجمعة؟ (السبت)" },
+        { q: "How many legs does a spider have?", o: ["6", "8", "10"], c: 1, tr: "كم عدد أرجل العنكبوت؟ (8 أرجل)" },
+        { q: "What do you use to write on a blackboard?", o: ["Pen", "Chalk", "Pencil"], c: 1, tr: "ماذا تستخدم للكتابة على السبورة؟ (الطباشير)" },
+        { q: "If an item is 'free', it costs:", o: ["Nothing", "A lot", "Half price"], c: 0, tr: "إذا كان الشيء 'مجاني'، فثمنه: (لاشيء)" },
+        { q: "Which season comes after Winter?", o: ["Autumn", "Spring", "Summer"], c: 1, tr: "أي فصل يأتي بعد الشتاء؟ (الربيع)" },
+        { q: "What do you call the brother of your mother?", o: ["Uncle", "Aunt", "Cousin"], c: 0, tr: "ماذا تسمي أخ والدتك؟ (الخال)" },
+        { q: "What color is a banana when it is ripe?", o: ["Red", "Blue", "Yellow"], c: 2, tr: "ما لون الموز عندما ينضج؟ (أصفر)" },
+        { q: "Where do you go to catch a train?", o: ["Airport", "Station", "Port"], c: 1, tr: "أين تذهب لركوب القطار؟ (المحطة)" },
+        { q: "What is the opposite of 'Strong'?", o: ["Small", "Weak", "Slow"], c: 1, tr: "ما هو عكس كلمة 'قوي'؟ (ضعيف)" },
+        { q: "Which planet is known as the 'Red Planet'?", o: ["Mars", "Venus", "Jupiter"], c: 0, tr: "أي كوكب يلقب بـ 'الكوكب الأحمر'؟ (المريخ)" },
+        { q: "What do you use to protect yourself from rain?", o: ["Towel", "Umbrella", "Hat"], c: 1, tr: "ماذا تستخدم لحماية نفسك من المطر؟ (المظلة)" },
+        { q: "A person who cooks in a restaurant is a:", o: ["Chef", "Waiter", "Manager"], c: 0, tr: "الشخص الذي يطبخ في المطعم هو: (شيف/طباخ)" },
+        { q: "How many minutes are in an hour?", o: ["30", "60", "100"], c: 1, tr: "كم عدد الدقائق في الساعة؟ (60 دقيقة)" },
+        { q: "Which organ do you use to breathe?", o: ["Heart", "Lungs", "Stomach"], c: 1, tr: "أي عضو تستخدمه للتنفس؟ (الئتان)" },
+        { q: "What is the capital of France?", o: ["London", "Paris", "Rome"], c: 1, tr: "ما هي عاصمة فرنسا؟ (باريس)" },
+        { q: "Which animal says 'Meow'?", o: ["Dog", "Cat", "Cow"], c: 1, tr: "أي حيوان يقول 'مياو'؟ (القطة)" },
+        { q: "What is the opposite of 'Happy'?", o: ["Sad", "Angry", "Brave"], c: 0, tr: "ما هو عكس كلمة 'سعيد'؟ (حزين)" },
+        { q: "Where do you go to buy medicine?", o: ["Bakery", "Pharmacy", "Gym"], c: 1, tr: "أين تذهب لشراء الدواء؟ (الصيدلية)" },
+        { q: "What do you use to smell things?", o: ["Eyes", "Ears", "Nose"], c: 2, tr: "ماذا تستخدم لشم الأشياء؟ (الأنف)" },
+        { q: "Which bird is known for its beautiful tail?", o: ["Pigeon", "Peacock", "Eagle"], c: 1, tr: "أي طائر مشهور بذيله الجميل؟ (الطاووس)" },
+        { q: "What is the main language spoken in the USA?", o: ["Spanish", "English", "French"], c: 1, tr: "ما هي اللغة الأساسية في الولايات المتحدة؟ (الإنجليزية)" },
+        { q: "If you are 'brave', you are not:", o: ["Strong", "Afraid", "Fast"], c: 1, tr: "إذا كنت 'شجاعاً'، فأنت لست: (خائفاً)" },
+        { q: "Which metal is attracted to a magnet?", o: ["Gold", "Iron", "Aluminum"], c: 1, tr: "أي معدن ينجذب للمغناطيس؟ (الحديد)" },
+        { q: "What do you call a person who treats sick people?", o: ["Teacher", "Doctor", "Engineer"], c: 1, tr: "ماذا تسمي الشخص الذي يعالج المرضى؟ (طبيب)" },
+        { q: "How many days are in a week?", o: ["5", "6", "7"], c: 2, tr: "كم عدد أيام الأسبوع؟ (7 أيام)" },
+        { q: "What do you use to cut paper?", o: ["Scissors", "Knife", "Saw"], c: 0, tr: "ماذا تستخدم لقص الورق؟ (المقص)" },
+        { q: "Which of these is a 'dairy product'?", o: ["Meat", "Milk", "Rice"], c: 1, tr: "أي من هذه يعتبر من 'منتجات الألبان'؟ (الحليب)" },
+        { q: "What is the opposite of 'Big'?", o: ["Large", "Small", "Wide"], c: 1, tr: "ما هو عكس كلمة 'كبير'؟ (صغير)" },
+        { q: "Where do you sleep?", o: ["Kitchen", "Bedroom", "Office"], c: 1, tr: "أين تنام؟ (غرفة النوم)" },
+        { q: "Which animal is the tallest in the world?", o: ["Elephant", "Giraffe", "Ostrich"], c: 1, tr: "أي حيوان هو الأطول في العالم؟ (الزرافة)" },
+        { q: "What do you use to wash your hair?", o: ["Soap", "Shampoo", "Lotion"], c: 1, tr: "ماذا تستخدم لغسل شعرك؟ (الشامبو)" },
+        { q: "What is the opposite of 'Cheap'?", o: ["Easy", "Expensive", "Inexpensive"], c: 1, tr: "ما هو عكس كلمة 'رخيص'؟ (غالي)" },
+        { q: "How many colors are in a rainbow?", o: ["5", "7", "9"], c: 1, tr: "كم عدد ألوان قوس قزح؟ (7 ألوان)" },
+        { q: "Which ocean is the largest on Earth?", o: ["Atlantic", "Indian", "Pacific"], c: 2, tr: "أي محيط هو الأكبر على الأرض؟ (الهادي)" },
+        { q: "What is the synonym of 'Huge'?", o: ["Tiny", "Massive", "Weak"], c: 1, tr: "ما هو مرادف كلمة 'ضخم'؟ (Massive)" },
+        { q: "What do you call a person who makes bread?", o: ["Butcher", "Baker", "Chef"], c: 1, tr: "ماذا تسمي الشخص الذي يصنع الخبز؟ (خباز)" },
+        { q: "Which part of the tree is underground?", o: ["Leaves", "Roots", "Trunk"], c: 1, tr: "أي جزء من الشجرة يكون تحت الأرض؟ (الجذور)" },
+        { q: "What is the opposite of 'Near'?", o: ["Far", "Close", "Beside"], c: 0, tr: "ما هو عكس كلمة 'قريب'؟ (بعيد)" },
+        { q: "If a movie is 'hilarious', it is...", o: ["Boring", "Very funny", "Scary"], c: 1, tr: "إذا كان الفيلم 'hilarious'، فهو: (مضحك جداً)" },
+        { q: "Which continent is the Sahara Desert in?", o: ["Asia", "Africa", "Europe"], c: 1, tr: "في أي قارة تقع الصحراء الكبرى؟ (أفريقيا)" },
+        { q: "What do you use to write on a computer?", o: ["Mouse", "Keyboard", "Printer"], c: 1, tr: "ماذا تستخدم للكتابة على الكمبيوتر؟ (لوحة المفاتيح)" },
+        { q: "What is the opposite of 'Empty'?", o: ["Full", "Hollow", "Clean"], c: 0, tr: "ما هو عكس كلمة 'فارغ'؟ (ممتلئ)" },
+        { q: "Which instrument has white and black keys?", o: ["Guitar", "Violin", "Piano"], c: 2, tr: "أي آلة موسيقية لها مفاتيح بيضاء وسوداء؟ (البيانو)" },
+        { q: "What is the opposite of 'Fast'?", o: ["Quick", "Slow", "High"], c: 1, tr: "ما هو عكس كلمة 'سريع'؟ (بطيء)" },
+        { q: "What do you use to clean your teeth?", o: ["Comb", "Toothbrush", "Spoon"], c: 1, tr: "ماذا تستخدم لتنظيف أسنانك؟ (فرشاة الأسنان)" },
+        { q: "If someone is 'exhausted', they are...", o: ["Very happy", "Very tired", "Very rich"], c: 1, tr: "إذا كان شخص ما 'exhausted'، فهو: (متعب جداً)" },
+        { q: "Which animal is known for having a long trunk?", o: ["Elephant", "Rhino", "Hippo"], c: 0, tr: "أي حيوان مشهور بخرطومه الطويل؟ (الفيل)" },
+        { q: "What do you call your father's sister?", o: ["Aunt", "Niece", "Grandmother"], c: 0, tr: "ماذا تسمي أخت والدك؟ (العمة)" },
+        { q: "What is the boiling point of water?", o: ["50°C", "100°C", "200°C"], c: 1, tr: "ما هي درجة غليان الماء؟ (100 درجة)" },
+        { q: "Which of these is used to travel on water?", o: ["Car", "Boat", "Plane"], c: 1, tr: "أي من هذه يستخدم للسفر عبر الماء؟ (القارب)" },
+        { q: "What is the opposite of 'True'?", o: ["Real", "False", "Correct"], c: 1, tr: "ما هو عكس كلمة 'صحيح'؟ (خطأ)" },
+        { q: "Which organ pumps blood through your body?", o: ["Lungs", "Brain", "Heart"], c: 2, tr: "أي عضو يضخ الدم في جسمك؟ (القلب)" },
+        { q: "What is the synonym of 'Start'?", o: ["End", "Begin", "Stop"], c: 1, tr: "ما هو مرادف كلمة 'يبدأ'؟ (Begin)" },
+        { q: "Which country is famous for the Pyramids?", o: ["Italy", "Egypt", "China"], c: 1, tr: "أي دولة مشهورة بالأهرامات؟ (مصر)" },
+        { q: "What do you use to see stars at night?", o: ["Microscope", "Telescope", "Camera"], c: 1, tr: "ماذا تستخدم لرؤية النجوم ليلاً؟ (التلسكوب)" },
+        { q: "What is the opposite of 'Quiet'?", o: ["Silent", "Noisy", "Calm"], c: 1, tr: "ما هو عكس كلمة 'هادئ'؟ (صاخب)" },
+        { q: "A 'century' is how many years?", o: ["10", "100", "1000"], c: 1, tr: "كم عدد السنوات في 'القرن'؟ (100 سنة)" },
+        { q: "Which gas do humans need to breathe in?", o: ["Oxygen", "Carbon Dioxide", "Nitrogen"], c: 0, tr: "أي غاز يحتاج البشر لتنفسه؟ (الأكسجين)" },
+        { q: "What do you use to open a door?", o: ["Key", "Lock", "Hinge"], c: 0, tr: "ماذا تستخدم لفتح الباب؟ (المفتاح)" },
+        { q: "What is the opposite of 'Deep'?", o: ["Shallow", "Low", "Short"], c: 0, tr: "ما هو عكس كلمة 'عميق'؟ (ضحل)" },
+        { q: "Which animal produces milk for humans?", o: ["Chicken", "Cow", "Pig"], c: 1, tr: "أي حيوان ينتج الحليب للبشر؟ (البقرة)" },
+        { q: "If a job is 'easy', it is not...", o: ["Simple", "Difficult", "Fast"], c: 1, tr: "إذا كان العمل 'سهلاً'، فهو ليس: (صعباً)" },
+        { q: "What do you call the person who flies to space?", o: ["Pilot", "Astronaut", "Scientist"], c: 1, tr: "ماذا تسمي الشخص الذي يطير للفضاء؟ (رائد فضاء)" },
+        { q: "Which shape has three sides?", o: ["Square", "Circle", "Triangle"], c: 2, tr: "أي شكل له ثلاثة أضلاع؟ (المثلث)" },
+        { q: "What is the opposite of 'Dark'?", o: ["Light", "Black", "Heavy"], c: 0, tr: "ما هو عكس كلمة 'مظلم'؟ (مضيء)" },
+        { q: "Where does a 'King' live?", o: ["Cottage", "Palace", "Tent"], c: 1, tr: "أين يعيش 'الملك'؟ (القصر)" },
+        { q: "Which fruit is used to make wine?", o: ["Apple", "Orange", "Grapes"], c: 2, tr: "أي فاكهة تستخدم لصنع النبيذ؟ (العنب)" },
+        { q: "What is the opposite of 'First'?", o: ["Middle", "Last", "Second"], c: 1, tr: "ما هو عكس كلمة 'الأول'؟ (الأخير)" },
+        { q: "Which animal is known to be very slow?", o: ["Rabbit", "Snail", "Deer"], c: 1, tr: "أي حيوان معروف بكونه بطيئاً جداً؟ (الحلزون)" },
+        { q: "What do you use to watch movies?", o: ["Radio", "Television", "Fridge"], c: 1, tr: "ماذا تستخدم لمشاهدة الأفلام؟ (التلفاز)" },
+        { q: "If something is 'fragile', it can...", o: ["Bend", "Break easily", "Bounce"], c: 1, tr: "إذا كان الشيء 'fragile'، فهو: (ينكسر بسهولة)" },
+        { q: "Which planet is closest to the Sun?", o: ["Earth", "Mars", "Mercury"], c: 2, tr: "أي كوكب هو الأقرب للشمس؟ (عطارد)" },
+        { q: "What is the opposite of 'Win'?", o: ["Lose", "Fail", "Beat"], c: 0, tr: "ما هو عكس كلمة 'يفوز'؟ (يخسر)" },
+        { q: "How many hours are in a day?", o: ["12", "24", "48"], c: 1, tr: "كم عدد الساعات في اليوم؟ (24 ساعة)" },
+        { q: "Where do you go to see a doctor?", o: ["School", "Clinic", "Park"], c: 1, tr: "أين تذهب لمقابلة الطبيب؟ (العيادة)" },
+        { q: "Which language is spoken in Japan?", o: ["Japanese", "Chinese", "Korean"], c: 0, tr: "ما هي اللغة المتحدث بها في اليابان؟ (اليابانية)" },
+        { q: "What do you use to wipe your hands?", o: ["Towel", "Plate", "Soap"], c: 0, tr: "ماذا تستخدم لتجفيف يديك؟ (المنشفة)" },
+        { q: "What is the opposite of 'Up'?", o: ["High", "Down", "Left"], c: 1, tr: "ما هو عكس كلمة 'أعلى'؟ (أسفل)" },
+        { q: "Which animal carries its baby in a pouch?", o: ["Tiger", "Kangaroo", "Panda"], c: 1, tr: "أي حيوان يحمل طفله في جراب؟ (الكنغر)" },
+        { q: "What do you use to eat soup?", o: ["Fork", "Knife", "Spoon"], c: 2, tr: "ماذا تستخدم لأكل الحساء؟ (الملعقة)" },
+        { q: "What is the synonym of 'Beautiful'?", o: ["Ugly", "Pretty", "Small"], c: 1, tr: "ما هو مرادف كلمة 'جميل'؟ (Pretty)" },
+        { q: "Which part of the body do you use to think?", o: ["Heart", "Brain", "Lungs"], c: 1, tr: "أي جزء من الجسم تستخدمه للتفكير؟ (الدماغ)" },
+        { q: "What is the opposite of 'Old' (for people)?", o: ["New", "Young", "Modern"], c: 1, tr: "ما هو عكس كلمة 'كبير السن'؟ (شاب)" },
+        { q: "Which of these is a 'pet'?", o: ["Lion", "Dog", "Shark"], c: 1, tr: "أي من هذه يعتبر 'حيواناً أليفاً'؟ (الكلب)" },
+        { q: "What do you use to see your own face?", o: ["Window", "Mirror", "Lens"], c: 1, tr: "ماذا تستخدم لرؤية وجهك؟ (المرآة)" },
+        { q: "Which city is the capital of Japan?", o: ["Tokyo", "Seoul", "Beijing"], c: 0, tr: "ما هي عاصمة اليابان؟ (طوكيو)" },
+        { q: "What is the opposite of 'Rich'?", o: ["Poor", "Lucky", "Weak"], c: 0, tr: "ما هو عكس كلمة 'غني'؟ (فقير)" },
+        { q: "Where do fish live?", o: ["Trees", "Water", "Sand"], c: 1, tr: "أين تعيش الأسماك؟ (الماء)" },
+        { q: "Which insect makes honey?", o: ["Ant", "Bee", "Fly"], c: 1, tr: "أي حشرة تصنع العسل؟ (النحلة)" },
+        { q: "What do you use to hear music?", o: ["Eyes", "Ears", "Mouth"], c: 1, tr: "ماذا تستخدم لسماع الموسيقى؟ (الأذنان)" },
+        { q: "What is the opposite of 'Love'?", o: ["Like", "Hate", "Enjoy"], c: 1, tr: "ما هو عكس كلمة 'حب'؟ (كره)" },
+        { q: "Which planet is the largest?", o: ["Mars", "Jupiter", "Earth"], c: 1, tr: "أي كوكب هو الأكبر؟ (المشتري)" },
+        { q: "What do you use to fly a kite?", o: ["Water", "Wind", "Sun"], c: 1, tr: "ماذا تحتاج لتطيير طائرة ورقية؟ (الرياح)" }
+    ];
+
+    let state = {
+        idx: 0,
+        score: 0,
+        streak: 0,
+        currentQuestions: [],
+        timer: null,
+        timeLeft: 20
+    };
+
+    function startGame() {
+        // خلط واختيار 20 سؤال عشوائي من أصل 100
+        let shuffled = [...masterDatabase].sort(() => Math.random() - 0.5);
+        state.currentQuestions = shuffled.slice(0, 20);
+        state.idx = 0;
+        state.score = 0;
+        state.streak = 0;
+        
+        document.getElementById('home-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        document.getElementById('result-screen').classList.add('hidden');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        if (state.idx >= 20) {
+            showResults();
+            return;
+        }
+
+        const q = state.currentQuestions[state.idx];
+        document.getElementById('progress').innerText = `السؤال ${state.idx + 1} / 20`;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('translation-box').classList.add('hidden');
+        
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+
+        q.o.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => check(i, btn);
+            container.appendChild(btn);
+        });
+
+        startTimer();
+    }
+
+    function startTimer() {
+        clearInterval(state.timer);
+        state.timeLeft = 20;
+        const fill = document.getElementById('timer-fill');
+        const text = document.getElementById('timer-text');
+
+        state.timer = setInterval(() => {
+            state.timeLeft -= 0.1;
+            fill.style.width = (state.timeLeft * 5) + "%";
+            text.innerText = state.timeLeft.toFixed(1) + "s";
+            if (state.timeLeft <= 0) {
+                clearInterval(state.timer);
+                check(-1, null);
+            }
+        }, 100);
+    }
+
+    function check(userIdx, btn) {
+        clearInterval(state.timer);
+        const q = state.currentQuestions[state.idx];
+        const btns = document.querySelectorAll('.option-btn');
+        
+        btns.forEach(b => b.style.pointerEvents = 'none');
+        
+        document.getElementById('translation-box').classList.remove('hidden');
+        document.getElementById('trans-text').innerText = q.tr;
+
+        if (userIdx === q.c) {
+            btn.classList.add('correct');
+            state.score += Math.round(state.timeLeft * 10);
+            state.streak++;
+            confetti({ particleCount: 60, spread: 70, origin: { y: 0.8 } });
+        } else {
+            if (btn) btn.classList.add('wrong');
+            btns[q.c].classList.add('correct');
+            state.streak = 0;
+        }
+
+        document.getElementById('score').innerText = state.score;
+        document.getElementById('streak').innerText = state.streak;
+
+        setTimeout(() => {
+            state.idx++;
+            loadQuestion();
+        }, 3500); 
+    }
+
+    function showResults() {
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+        document.getElementById('final-score').innerText = state.score;
+        
+        let feedback = "";
+        if (state.score > 2500) feedback = "مذهل! لقد قطعت الخطوة الأولى بنجاح باهر.";
+        else if (state.score > 1500) feedback = "رائع! أنت تمشي في الطريق الصحيح.";
+        else feedback = "بداية جيدة! استمر في المحاولة لتثبيت معلوماتك.";
+        document.getElementById('res-feedback').innerText = feedback;
+    }
+</script>
+</body>
+</html>
